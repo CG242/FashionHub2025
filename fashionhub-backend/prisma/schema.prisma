@@ -9,117 +9,117 @@ datasource db {
 
 // USER (venant de Keycloak)
 model User {
-  id         String         @id
-  email      String         @unique
-  nom        String
-  prenom     String
-  tel        String?
-  role       String
-  adresse    Adresse[]
-  panier     Panier?
-  commandes  Commande[]
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  nom       String
+  prenom    String
+  tel       String?
+  role      String
+  adresse   Adresse[]
+  panier    Panier?
+  commandes Commande[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 // ADRESSE
 model Adresse {
-  id         Int            @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   street     String
   city       String
   postalCode String
   country    String
-  userId     String
-  user       User           @relation(fields: [userId], references: [id])
-  commandes  Commande[]     // relation inverse ajoutée
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  userId     Int // corrigé de String -> Int
+  user       User       @relation(fields: [userId], references: [id])
+  commandes  Commande[] // relation inverse ajoutée
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 // CATEGORIE
 model Categorie {
-  id         Int            @id @default(autoincrement())
-  libelle    String
-  produits   Produit[]
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  id        Int       @id @default(autoincrement())
+  libelle   String
+  produits  Produit[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 // PRODUIT
 model Produit {
-  id               Int               @id @default(autoincrement())
-  libelle          String
-  description      String
-  prix             Float
-  stock            Int
-  imageUrl         String
-  idCategorie      Int
-  categorie        Categorie         @relation(fields: [idCategorie], references: [id])
-  articlePanier    ArticlePanier[]
-  articleCommande  ArticleCommande[]
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  id              Int               @id @default(autoincrement())
+  libelle         String
+  description     String
+  prix            Float
+  stock           Int
+  imageUrl        String
+  idCategorie     Int
+  categorie       Categorie         @relation(fields: [idCategorie], references: [id])
+  articlePanier   ArticlePanier[]
+  articleCommande ArticleCommande[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 }
 
 // PANIER
 model Panier {
-  id         Int            @id @default(autoincrement())
-  userId     String         @unique
-  user       User           @relation(fields: [userId], references: [id])
-  articles   ArticlePanier[]
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  id        Int             @id @default(autoincrement())
+  userId    Int             @unique // corrigé
+  user      User            @relation(fields: [userId], references: [id])
+  articles  ArticlePanier[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 }
 
 // ARTICLE DANS LE PANIER
 model ArticlePanier {
-  id         Int            @id @default(autoincrement())
-  idPanier   Int
-  idProduit  Int
-  quantite   Int
-  panier     Panier         @relation(fields: [idPanier], references: [id])
-  produit    Produit        @relation(fields: [idProduit], references: [id])
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  id        Int      @id @default(autoincrement())
+  idPanier  Int
+  idProduit Int
+  quantite  Int
+  panier    Panier   @relation(fields: [idPanier], references: [id])
+  produit   Produit  @relation(fields: [idProduit], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // COMMANDE
 model Commande {
-  id            Int              @id @default(autoincrement())
-  userId        String
-  montantTotal  Float
-  statut        String
-  idAdresse     Int
-  user          User             @relation(fields: [userId], references: [id])
-  adresse       Adresse          @relation(fields: [idAdresse], references: [id])
-  articles      ArticleCommande[]
-  paiement      Paiement?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id           Int               @id @default(autoincrement())
+  userId       Int // corrigé
+  montantTotal Float
+  statut       String
+  idAdresse    Int
+  user         User              @relation(fields: [userId], references: [id])
+  adresse      Adresse           @relation(fields: [idAdresse], references: [id])
+  articles     ArticleCommande[]
+  paiement     Paiement?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 }
 
 // ARTICLE DANS LA COMMANDE
 model ArticleCommande {
-  id          Int        @id @default(autoincrement())
-  idCommande  Int
-  idProduit   Int
-  quantite    Int
-  prixUnit    Float
-  commande    Commande   @relation(fields: [idCommande], references: [id])
-  produit     Produit    @relation(fields: [idProduit], references: [id])
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id         Int      @id @default(autoincrement())
+  idCommande Int
+  idProduit  Int
+  quantite   Int
+  prixUnit   Float
+  commande   Commande @relation(fields: [idCommande], references: [id])
+  produit    Produit  @relation(fields: [idProduit], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 // PAIEMENT
 model Paiement {
-  id             Int        @id @default(autoincrement())
-  idCommande     Int        @unique
-  montant        Float
-  statut         String
-  moyenPaiement  String
-  idTransaction  String
-  commande       Commande   @relation(fields: [idCommande], references: [id])
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  id            Int      @id @default(autoincrement())
+  idCommande    Int      @unique
+  montant       Float
+  statut        String
+  moyenPaiement String
+  idTransaction String
+  commande      Commande @relation(fields: [idCommande], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
